@@ -40,5 +40,80 @@ module.exports = {
         Article.findById(id).populate('author').then(article=>{
             res.render('article/details',article);
         });
+    },
+    editGet:(req,res) =>
+    {
+        let id = req.params.id;
+        if(!req.isAuthenticated())
+        {
+            let ReturnUrl = `/article/edit/${id}`;
+            req.session.returnUrl = ReturnUrl;
+            res.redirect('/user/login');
+            return;
+        }
+        Article.findById(id).then(article => {
+            res.render('article/edit',article);
+        })
+    },
+    editPost: (req,res) =>
+    {
+        let id = req.params.id;
+
+        let args = req.body;
+
+        let errorMsg = '';
+
+        if(!args.title)
+        {
+            errorMsg = 'A post cannot be released without a title!';
+        }
+        else if(!args.content)
+        {
+            errorMsg = 'A post cannot be released without a content';
+        }
+        if(errorMsg)
+        {
+            res.render('article/edit',{error:errorMsg});
+        }
+        else {
+            Article.update({_id:id},{$set:{title:args.title,content : args.content}})
+                .then(update=>{
+                    res.redirect(`/article/details/${id}`);
+                })
+        }
+    },
+    deleteGet:(req,res) =>
+    {
+        let id = req.params.id;
+
+        Article.findById(id).then(article => {
+            res.render('article/delete',article);
+        })
+    },
+    deletePost:(req,res)=>
+    {
+      let id = req.params.id;
+
+      Article.findOneAndRemove({_id:id}).populate('author').then(article => {
+          let author = article.author;
+
+          let index = author.articles.indexOf(article.id);
+
+          if(index < 0)
+          {
+              let errorMsg = 'Article was not found';
+              res.render('article/delete',{error:errorMsg});
+          }
+          else{
+              let count = 1;
+              author.articles.splice(index,count);
+              article.save().then((user)=>{
+                  res.redirect('/');
+              });
+          }
+      })
+
+
     }
+
 }

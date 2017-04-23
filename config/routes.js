@@ -17,5 +17,11 @@ module.exports = (app) => {
     app.post('/article/create',articleController.createArticlePost);
 
     app.get('/article/details/:id',articleController.detailsGet);
+
+    app.get('/article/edit/:id',articleController.editGet);
+    app.post('/article/edit/:id',articleController.editPost);
+
+    app.get('/article/delete/:id',articleController.deleteGet);
+    app.post('/article/delete/:id',articleController.deletePost);
 };
 

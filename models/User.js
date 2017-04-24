@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
 const Role = require('mongoose').model('Role');
 const encryption = require('./../utilities/encryption');
+let ObjectID = mongoose.Schema.Types.ObjectId;
 
 let userSchema = mongoose.Schema(
     {
         email: {type: String, required: true, unique: true},
         passwordHash: {type: String, required: true},
-        articles: [{type:mongoose.Schema.Types.ObjectId,ref:'Article'}],
+        articles: [{type:ObjectID,ref:'Article'}],
         fullName: {type: String, required: true},
-        roles: [{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
+        roles: [{type:ObjectID,ref:'User'}],
         salt: {type: String, required: true}
     }
 );
@@ -71,16 +72,7 @@ module.exports.seedAdmin=()=>
                 User.create(currUser).then(user =>
                 {
                     role.types.push(role.id);
-                    role.save(err =>
-                    {
-                        if(err)
-                        {
-                            console.log(err.message);
-                        }
-                        else {
-                            console.log("Text")
-                        }
-                    });
+                    role.save();
                 })
             })
         }

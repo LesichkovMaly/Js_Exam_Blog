@@ -1,5 +1,5 @@
 const Article = require('mongoose').model('Article');
-
+const dateFormat =require('dateformat');
 module.exports = {
     createArticleGet:(req,res) =>
     {
@@ -7,6 +7,8 @@ module.exports = {
     },
     createArticlePost:(req,res)=> {
         let articleArgs = req.body;
+        let formattedDate = dateFormat(articleArgs.date,"shortDate");
+        articleArgs.date = formattedDate;
         let errorMsg = '';
         if(!req.isAuthenticated())
         {
@@ -37,8 +39,24 @@ module.exports = {
     detailsGet:(req,res)=>
     {
         let id = req.params.id;
+
         Article.findById(id).populate('author').then(article=>{
-            res.render('article/details',article);
+
+            if(!req.user)
+            {
+                res.render('article/details',{article:article,isUserAuthenticated:false});
+                return;
+            }
+            req.user.isinRole('Admin').then(isAdmin=>
+            {
+                if(!isAdmin && req.user.isAuthor(article))
+                {
+                    res.redirect('/');
+                    return;
+                }
+                res.render('article/details',{article:article,isUserAuthenticated:true});
+            });
+
         });
     },
     editGet:(req,res) =>
@@ -52,8 +70,16 @@ module.exports = {
             return;
         }
         Article.findById(id).then(article => {
-            res.render('article/edit',article);
+            req.user.isinRole('Admin').then(isAdmin=>{
+                if(!isAdmin && req.user.isAuthor(article))
+                {
+                    res.redirect('/');
+                    return
+                }
+                res.render('article/edit',article);
+            })
         })
+
     },
     editPost: (req,res) =>
     {
@@ -85,9 +111,22 @@ module.exports = {
     deleteGet:(req,res) =>
     {
         let id = req.params.id;
-
+        if(!req.isAuthenticated())
+        {
+            let ReturnUrl = `/article/delete/${id}`;
+            req.session.returnUrl = ReturnUrl;
+            res.redirect('/user/login');
+            return;
+        }
         Article.findById(id).then(article => {
-            res.render('article/delete',article);
+            req.user.isinRole('Admin').then(isAdmin=>{
+                if(!isAdmin || req.user.isAuthor(article))
+                {
+                    res.redirect('/');
+                    return
+                }
+                res.render('article/delete',article);
+            })
         })
     },
     deletePost:(req,res)=>

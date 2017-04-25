@@ -40,7 +40,7 @@ module.exports = {
 
 
                 User.create(userObject).then(user => {
-                    role.users.push(user.id);
+                    role.types.push(user.id);
                     role.save(err =>{
                     if(err)
                     {
@@ -61,7 +61,7 @@ module.exports = {
                     }
                     })
                 })
-                })
+                });
             }
         })
 
@@ -97,7 +97,7 @@ module.exports = {
         req.logOut();
         res.redirect('/');
     },
-    userDetailsGet:(req,res) => {
+   /* userDetailsGet:(req,res) => {
       res.render('/user/details');
-    }
+    }*/
 };

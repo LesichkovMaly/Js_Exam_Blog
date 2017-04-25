@@ -1,31 +1,33 @@
 <div class="container body-content">
-<div class="row">
-    <div class="col-md-12">
-        <article>
-            <header>
-                <h2>{{article.title}}</h2>
-            </header>
+    <div class="row">
+        <div class="col-md-12">
+            <article>
+                <header>
+                    <h2>{{article.title}}</h2>
+                </header>
 
-            <p>
-                {{article.content}}
-            </p>
-            <small class="date">
-                {{article.date}}
-            </small>
-            <small class="author">
-                Created by {{article.author.fullName}}
-            </small>
+                <p>
+                    {{article.content}}
+                </p>
 
-            <footer>
-                <div class="pull-right">
-                    {{#if isUserAuthenticated}}
-                    <a class="btn btn-success btn-xs" href="/article/edit/{{id}}">Edit &raquo;</a>
-                    <a class="btn btn-danger btn-xs" href="/article/delete/{{id}}">Delete &raquo;</a>
-                    {{/if}}
-                    <a class="btn btn-default btn-xs" href="/">Back &raquo;</a>
-                </div>
-            </footer>
-        </article>
+                <small class="author">
+                    {{article.author.fullName}}
+                </small>
+
+                <p>
+                    Posted on {{article.date}}
+                </p>
+
+                <footer>
+                    <div class="pull-right">
+                        {{#if isUserAuthorized}}
+                        <a class="btn btn-success btn-xs" href="/article/edit/{{article.id}}">Edit &raquo;</a>
+                        <a class="btn btn-danger btn-xs" href="/article/delete/{{article.id}}">Delete &raquo;</a>
+                        {{/if}}
+                        <a class="btn btn-default btn-xs" href="/">Back &raquo;</a>
+                    </div>
+                </footer>
+            </article>
+        </div>
     </div>
-</div>
 </div>

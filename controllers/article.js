@@ -1,5 +1,5 @@
 const Article = require('mongoose').model('Article');
-const dateFormat =require('dateformat');
+
 module.exports = {
     createArticleGet:(req,res) =>
     {
@@ -7,8 +7,6 @@ module.exports = {
     },
     createArticlePost:(req,res)=> {
         let articleArgs = req.body;
-        let formattedDate = dateFormat(articleArgs.date,"shortDate");
-        articleArgs.date = formattedDate;
         let errorMsg = '';
         if(!req.isAuthenticated())
         {
@@ -49,7 +47,7 @@ module.exports = {
             }
             req.user.isinRole('Admin').then(isAdmin=>
             {
-                if(!isAdmin && req.user.isAuthor(article))
+                if(!isAdmin && !req.user.isAuthor(article))
                 {
                     res.redirect('/');
                     return;
@@ -62,23 +60,21 @@ module.exports = {
     editGet:(req,res) =>
     {
         let id = req.params.id;
-        if(!req.isAuthenticated())
-        {
-            let ReturnUrl = `/article/edit/${id}`;
-            req.session.returnUrl = ReturnUrl;
-            res.redirect('/user/login');
-            return;
-        }
-        Article.findById(id).then(article => {
-            req.user.isinRole('Admin').then(isAdmin=>{
-                if(!isAdmin && req.user.isAuthor(article))
+
+        Article.findById(id).then(article=>{
+
+
+            req.user.isinRole('Admin').then(isAdmin=>
+            {
+                if(!isAdmin && !req.user.isAuthor(article))
                 {
                     res.redirect('/');
-                    return
+                    return;
                 }
                 res.render('article/edit',article);
-            })
-        })
+            });
+
+        });
 
     },
     editPost: (req,res) =>
@@ -110,7 +106,6 @@ module.exports = {
     },
     deleteGet:(req,res) =>
     {
-        let id = req.params.id;
         if(!req.isAuthenticated())
         {
             let ReturnUrl = `/article/delete/${id}`;
@@ -119,6 +114,7 @@ module.exports = {
             return;
         }
         Article.findById(id).then(article => {
+
             req.user.isinRole('Admin').then(isAdmin=>{
                 if(!isAdmin || req.user.isAuthor(article))
                 {

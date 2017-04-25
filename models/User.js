@@ -38,7 +38,7 @@ userSchema.method ({
             {
                 return false;
             }
-            let isinRole =this.roles.indexOf(role.id);
+            let isinRole =this.roles.indexOf(role.id) !== -1;
             return isinRole;
         })
     }
@@ -53,7 +53,7 @@ module.exports.seedAdmin=()=>
     User.findOne({email:email}).then(admin => {
         if(!admin)
         {
-            Role.findOne('Admin').then(role=>
+            Role.findOne({name:'Admin'}).then(role=>
             {
                 let salt = encryption.generateSalt();
                 let passwordHash = encryption.hashPassword('admin',salt);
@@ -63,15 +63,15 @@ module.exports.seedAdmin=()=>
                 let currUser = {
                     email:email,
                     passwordHash:passwordHash,
-                    fullName:'Admin',
                     articles:[],
+                    fullName:'Admin',
                     roles:roles,
                     salt:salt
 
                 }
                 User.create(currUser).then(user =>
                 {
-                    role.types.push(role.id);
+                    role.name.push(role.id);
                     role.save();
                 })
             })

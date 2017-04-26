@@ -97,7 +97,13 @@ module.exports = {
         req.logOut();
         res.redirect('/');
     },
-   /* userDetailsGet:(req,res) => {
-      res.render('/user/details');
-    }*/
+    userDetailsGet:(req,res) => {
+        if(!req.isAuthenticated())
+        {
+            res.redirect('/user/login');
+            return;
+        }
+
+      res.render('user/details');
+    }
 };

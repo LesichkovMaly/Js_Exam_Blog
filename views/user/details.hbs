@@ -1,0 +1,30 @@
+<div class="container body-content">
+    <div class="row">
+        <div class="col-md-12">
+
+                <header>
+                    <h2>User:{{user.fullName}}</h2>
+                </header>
+
+                <p>
+                    Email:{{user.email}}
+                </p>
+                <li>
+                    {{#each user.articles}}
+
+                        <ul>
+                            {{this.title}}
+                        </ul>
+
+                    {{/each}}
+                </li>
+                <footer>
+                    <div class="pull-right">
+
+                        <a class="btn btn-default btn-xs" href="/">Back &raquo;</a>
+                    </div>
+                </footer>
+
+        </div>
+    </div>
+</div>

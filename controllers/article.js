@@ -1,9 +1,11 @@
 const Article = require('mongoose').model('Article');
-
+const Category = require('mongoose').model('Category');
 module.exports = {
     createArticleGet:(req,res) =>
     {
-        res.render('article/create');
+        Category.find({}).then(categories => {
+            res.render('article/create',{categories:categories});
+        });
     },
     createArticlePost:(req,res)=> {
         let articleArgs = req.body;
@@ -33,6 +35,14 @@ module.exports = {
                 else{res.redirect('/');}
             })
         });
+        /*Category.findById(this.category).then(category=>{
+            if(category)
+            {
+                category.articles.push(this.id);
+                category.save();
+            }
+        });*/
+
     },
     detailsGet:(req,res)=>
     {

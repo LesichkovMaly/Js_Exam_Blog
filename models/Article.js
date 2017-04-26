@@ -5,7 +5,8 @@ let ObjectID = mongoose.Schema.Types.ObjectId;
 let articleSchema = mongoose.Schema({
     title : {type:String , required:true },
     content : {type:String , required:true },
-    author : {type:ObjectID , required:true,ref : "User"},
+    author : {type:ObjectID , required:true,ref : 'User'},
+    category:{type:ObjectID,required:true,ref:'Categories'},
     date:{type:dateFormat,format:('YYYY-MM-DD') , default:Date.now()}
 });
 

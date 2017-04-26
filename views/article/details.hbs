@@ -20,7 +20,7 @@
 
                 <footer>
                     <div class="pull-right">
-                        {{#if isUserAuthorized}}
+                        {{#if isUserAuthenticated}}
                         <a class="btn btn-success btn-xs" href="/article/edit/{{article.id}}">Edit &raquo;</a>
                         <a class="btn btn-danger btn-xs" href="/article/delete/{{article.id}}">Delete &raquo;</a>
                         {{/if}}

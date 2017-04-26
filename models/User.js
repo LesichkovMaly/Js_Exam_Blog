@@ -71,7 +71,7 @@ module.exports.seedAdmin=()=>
                 }
                 User.create(currUser).then(user =>
                 {
-                    role.name.push(role.id);
+                    role.name.push(user.id);
                     role.save();
                 })
             })

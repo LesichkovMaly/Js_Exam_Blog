@@ -9,15 +9,9 @@
                 <p>
                     Email:{{user.email}}
                 </p>
-                <li>
-                    {{#each user.articles}}
-
-                        <ul>
-                            {{this.title}}
-                        </ul>
-
-                    {{/each}}
-                </li>
+                <p>
+                    Articles created:{{user.articles.length}}
+                </p>
                 <footer>
                     <div class="pull-right">
 

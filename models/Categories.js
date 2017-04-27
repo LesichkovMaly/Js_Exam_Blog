@@ -1,21 +1,10 @@
 const mongoose = require('mongoose');
+let ObjectID = mongoose.Schema.Types.ObjectId;
 
 let categoriesSchema = mongoose.Schema({
-    name:{type:String,required:true}
-    ,
-    articles:[{type:mongoose.Schema.Types.ObjectId,ref:'Article'}]
-})
-categoriesSchema.method({
-    Delete:function () {
-        let Article = mongoose.model('Article');
-        for(let article of this.articles)
-        {
-            Article.findById(article).then(article=>{
-                article.remove();
-            })
-        }
-    }
+    name:{type:String,required:true},
+    articles: [{ type:ObjectID , ref:'Article' }]
 });
-categoriesSchema.set('versionKey',false);
-const Category = mongoose.model('Category',categoriesSchema)
+
+const Category = mongoose.model('Category',categoriesSchema);
 module.exports = Category;

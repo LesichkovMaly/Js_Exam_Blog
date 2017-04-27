@@ -5,6 +5,7 @@ const catController = require('./../controllers/categories');
 
 module.exports = (app) => {
     app.get('/', homeController.index);
+    app.get('/categories/:id',homeController.ListThemArticles);
 
     app.get('/user/register', userController.registerGet);
     app.post('/user/register', userController.registerPost);

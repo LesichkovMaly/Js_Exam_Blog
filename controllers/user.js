@@ -34,13 +34,11 @@ module.exports = {
                 let roles=[];
                 Role.findOne({name:'User'}).then(role=>
                 {
-                    roles.push(role.id);
+                    roles.push(roles.id);
                     userObject.roles = roles;
 
-
-
-                User.create(userObject).then(user => {
-                    role.types.push(user.id);
+                    User.create(userObject).then(user => {
+                    role.types.push(user);
                     role.save(err =>{
                     if(err)
                     {
@@ -48,7 +46,7 @@ module.exports = {
                         res.render('user/register',registerArgs);
                     }
                     else{
-                    reg.logIn(user,err=>
+                    req.logIn(user,err=>
                     {
                         if(err)
                         {

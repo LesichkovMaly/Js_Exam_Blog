@@ -1,5 +1,6 @@
 const Article = require('mongoose').model('Article');
 const Category = require('mongoose').model('Category');
+const User =require('mongoose').model('User');
 module.exports = {
     createArticleGet:(req,res) =>
     {
@@ -9,6 +10,7 @@ module.exports = {
     },
     createArticlePost:(req,res)=> {
         let articleArgs = req.body;
+        let currCategory = articleArgs.category;
         let errorMsg = '';
         if(!req.isAuthenticated())
         {
@@ -26,6 +28,11 @@ module.exports = {
         articleArgs.author = req.user.id;
         Article.create(articleArgs).then(article =>
         {
+
+            Category.findById(currCategory).then(category=> {
+                category.articles.push(article.id);
+                category.save();
+           });
             req.user.articles.push(article.id);
             req.user.save(err =>
             {
@@ -35,13 +42,6 @@ module.exports = {
                 else{res.redirect('/');}
             })
         });
-        /*Category.findById(this.category).then(category=>{
-            if(category)
-            {
-                category.articles.push(this.id);
-                category.save();
-            }
-        });*/
 
     },
     detailsGet:(req,res)=>
@@ -81,7 +81,11 @@ module.exports = {
                     res.redirect('/');
                     return;
                 }
-                res.render('article/edit',article);
+                Category.find({}).then(category => {
+                    article.categories=category;
+                    res.render('article/edit',article);
+                })
+
             });
 
         });
@@ -107,15 +111,32 @@ module.exports = {
         {
             res.render('article/edit',{error:errorMsg});
         }
-        else {
-            Article.update({_id:id},{$set:{title:args.title,content : args.content}})
-                .then(update=>{
-                    res.redirect(`/article/details/${id}`);
+        else
+        {
+            Article.findById(id).populate('category').then(article=> {
+                article.category.articles.remove(article.id);
+                article.category.save();
+
+
+                article.category=args.category;
+                article.title=args.title;
+                article.content=args.content;
+                article.save((err)=> {
+                    Category.findById(article.category).then(category=>{
+                        if(category.articles.indexOf(article.id) === -1)
+                        {
+                            category.articles.push(article.id);
+                            category.save();
+                        }
+                        res.redirect(`/article/details/${id}`);
+                    })
                 })
+            })
         }
     },
     deleteGet:(req,res) =>
     {
+        let id = req.params.id;
         if(!req.isAuthenticated())
         {
             let ReturnUrl = `/article/delete/${id}`;
@@ -126,7 +147,7 @@ module.exports = {
         Article.findById(id).then(article => {
 
             req.user.isinRole('Admin').then(isAdmin=>{
-                if(!isAdmin || req.user.isAuthor(article))
+                if(!isAdmin && !req.user.isAuthor(article))
                 {
                     res.redirect('/');
                     return
@@ -139,24 +160,20 @@ module.exports = {
     {
       let id = req.params.id;
 
-      Article.findOneAndRemove({_id:id}).populate('author').then(article => {
-          let author = article.author;
+      Article.findOneAndRemove({_id:id}).then(article => {
+          Category.findById(this.category).then(category=> {
+              category.articles.remove(article.id);
+              category.save();
 
-          let index = author.articles.indexOf(article.id);
-
-          if(index < 0)
+          });
+          User.findById(this.user).then(user=>
           {
-              let errorMsg = 'Article was not found';
-              res.render('article/delete',{error:errorMsg});
-          }
-          else{
-              let count = 1;
-              author.articles.splice(index,count);
-              article.save().then((user)=>{
-                  res.redirect('/');
-              });
-          }
-      })
+              user.articles.remove(article.id);
+              user.save();
+              res.redirect('/');
+
+          });
+      });
 
 
     }
